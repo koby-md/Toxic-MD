@@ -6,6 +6,32 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// ════════════════ [ تعديل قراءة الـ Session تلقائياً ] ════════════════
+const sessionName = path.join(__dirname, 'Session');
+
+if (!fs.existsSync(sessionName)) {
+  fs.mkdirSync(sessionName, { recursive: true });
+}
+
+// لصق النص هنا مباشرة
+const base64Session = "eyJub2lzZUtleSI6eyJwcml2YXRlIjp7InR5cGUiOiJCdWZmZXIiLCJkYXRhIjoiaURibVEzRE1Da29GVmluLzBXR1o5MXAreXljRXZJZE9HbC9rNjk2L3FFUT0ifSwicHVibGljIjp7InR5cGUiOiJCdWZmZXIiLCJkYXRhIjoiYndGUHlJcEtDM3JpWUJNNC90ZGFZWVpoL1gwOGltckY1bDZYSFlzMjlpUT0ifX0sInBhaXJpbmdFcGhlbWVyYWxLZXlQYWlyIjp7InByaXZhdGUiOnsidHlwZSI6IkJ1ZmZlciIsImRhdGEiOiJxSURVQUVCV0tCeUxQVHJRT2J5OEFPcDBGTFVyRDdIVGUzbWgrY09iK21zPSJ9LCJwdWJsaWMiOnsidHlwZSI6IkJ1ZmZlciIsImRhdGEiOiJTcEEyZUMvMGhLTHZkR3ArUGFBWDc3ZE5TaUhLUlhYWWpJRXVha3dqazFvPSJ9fSwic2lnbmVkSWRlbnRpdHlLZXkiOnsicHJpdmF0ZSI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6IjJKTFpSWlVFTWQyL3cwcExrV2ZjWGoyVlZPdEpZWkMzMXZjNndkdjcvRUE9In0sInB1YmxpYyI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6ImRHL2hWVEpKMzhGSjNobmdVMGtKcW1raXM4YVBXeG9OejRhTDA1L1A0ZzA9In19LCJzaWduZWRQcmVLZXkiOnsia2V5UGFpciI6eyJwcml2YXRlIjp7InR5cGUiOiJCdWZmZXIiLCJkYXRhIjoiS0pUdXg4OGpzd3hpc3JIVFpFTi9ha1pBaWpKcDFoN3JEMVRvWW5lUStFST0ifSwicHVibGljIjp7InR5cGUiOiJCdWZmZXIiLCJkYXRhIjoiajE2OVJGTkFTL2dhZHN0cVlZbXg4OHRuNWR1dldBUFRxZXM5dFJNU1Nqdz0ifX0sInNpZ25hdHVyZSI6eyJ0eXBlIjoiQnVmZmVyIiwiZGF0YSI6ImdlcHQ4V0ZLazhwZG9ETU9xZzlyVzlMWlJHZ2tpcGpIbXJ3cEtudzVGNEhkWTVEbUxPUlZBTzJ3UUJBWW1iZkl5Q09JOWV6RjBaeGJZSzU0dTZPVmlRPT0ifSwia2V5SWQiOjF9LCJyZWdpc3RyYXRpb25JZCI6MTk3LCJhZHZTZWNyZXRLZXkiOiJJekFuSVMwc2xTTkI5am5Va2Zjbm1qTkMrV0w2NlRJZ2V3V3Z2S0N2U3VjPSIsInByb2Nlc3NlZEhpc3RvcnlNZXNzYWdlcyI6W3sia2V5Ijp7InJlbW90ZUppZCI6IjIxMjYzNzkwNDAzOEBzLndoYXRzYXBwLm5ldCIsImZyb21NZSI6ZmFsc2UsImlkIjoiQUMxMEEyRDJFMUFBNEY4NTk3MTJCQkY1QjUwRDk4NkIiLCJwYXJ0aWNpcGFudCI6IiIsImFkZHJlc3NpbmdNb2RlIjoicG4ifSwibWVzc2FnZVRpbWVzdGFtcCI6MTc4MDU4MjYzN30seyJrZXkiOnsicmVtb3RlSmlkIjoiMjEyNjM3OTA0MDM4QHMud2hhdHNhcHAubmV0IiwiZnJvbU1lIjpmYWxzZSwiaWQiOiJBQzkyMEZBNzNCMDlCMzEwRjkwQjVCQTcyODVFRkY3OSIsInBhcnRpY2lwYW50IjoiIiwiYWRkcmVzc2luZ01vZGUiOiJwbiJ9LCJtZXNzYWdlVGltZXN0YW1wIjoxNzgwNTgyNjM3fSx7ImtleSI6eyJyZW1vdGVKaWQiOiIyMTI2Mzc5MDQwMzhAcy53aGF0c2FwcC5uZXQiLCJmcm9tTWUiOmZhbHNlLCJpZCI6IkFDOTUxMUJGRkNFREEwMDA5OEE5MDFEQzRGMzM0NDlDIiwicGFydGljaXBhbnQiOiIiLCJhZGRyZXNzaW5nTW9kZSI6InBuIn0sIm1lc3NhZ2VUaW1lc3RhbXAiOjE3ODA1ODI2Mzd9LHsia2V5Ijp7InJlbW90ZUppZCI6IjIxMjYzNzkwNDAzOEBzLndoYXRzYXBwLm5ldCIsImZyb21NZSI6ZmFsc2UsImlkIjoiQUM3RjU5MjFGMUUxQzRFNTU3NjAwMDU0OTREQTM5MTkiLCJwYXJ0aWNpcGFudCI6IiIsImFkZHJlc3NpbmdNb2RlIjoicG4ifSwibWVzc2FnZVRpbWVzdGFtcCI6MTc4MDU4MjYzOH1dLCJuZXh0UHJlS2V5SWQiOjgxMywiZmlyc3RVbnVwbG9hZGVkUHJlS2V5SWQiOjgxMywiYWNjb3VudFN5bmNDb3VudGVyIjoxLCJhY2NvdW50U2V0dGluZ3MiOnsidW5hcmNoaXZlQ2hhdHMiOmZhbHNlfSwicmVnaXN0ZXJlZCI6dHJ1ZSwicGFpcmluZ0NvZGUiOiJSQUE3SFpLQiIsIm1lIjp7ImlkIjoiMjEyNjM3OTA0MDM4OjEzQHMud2hhdHNhcHAubmV0IiwibGlkIjoiNjMzNTc0Nzg4NzMzOToxM0BsaWQiLCJuYW1lIjoiQk9ZLUJPVCJ9LCJhY2NvdW50Ijp7ImRldGFpbHMiOiJDTWFZemRJQ0VPS1JodEVHR0FRZ0FDZ0EiLCJhY2NvdW50U2lnbmF0dXJlS2V5IjoiRmdmZko1RG5Pd3VaYnYreU5PWHVMenF6VUhONDFGaCticmZuM0FjM2VtND0iLCJhY2NvdW50U2lnbmF0dXJlIjoiaHpyNjZwcVAya09EZU5WWXlvN2lmaS9lYzRHN1ZjZDNWME9ua2U3RHp0VjhodzVJQ3ZhTnRPYTlkVnJNN2w1c0M4cUd1cTZkaDhnSHVTdzNUSmdCRHc9PSIsImRldmljZVNpZ25hdHVyZSI6IlZ1b01MMGREUU42T2IvYnNhUHY2SlNUTGd0RDRzcVpUTVhjQWFSVmthaFAzb3d4ZU9mc1RvcitHLzl6ZTBURU84aWd6VFRWNWczWXFwZTlpaHEvU2pnPT0ifSwic2lnbmFsSWRlbnRpdGllcyI6W3siaWRlbnRpZmllciI6eyJuYW1lIjoiNjMzNTc0Nzg4NzMzOToxM0BsaWQiLCJkZXZpY2VJZCI6MH0sImlkZW50aWZpZXJLZXkiOnsidHlwZSI6IkJ1ZmZlciIsImRhdGEiOiJCUllIM3llUTV6c0xtVzcvc2pUbDdpODZzMUJ6ZU5SWWZtNjM1OXdITjNwdSJ9fV0sInBsYXRmb3JtIjoiYW5kcm9pZCIsInJvdXRpbmdJbmZvIjp7InR5cGUiOiJCdWZmZXIiLCJkYXRhIjoiQ0FJSUJRZ1MifSwibGFzdEFjY291bnRTeW5jVGltZXN0YW1wIjoxNzgwNTgyNjM2LCJsYXN0UHJvcEhhc2giOiIydWVDVkQiLCJteUFwcFN0YXRlS2V5SWQiOiJBQUFBQUtDZiJ9";
+
+try {
+  const credsFilePath = path.join(sessionName, 'creds.json');
+  let decryptedCreds = Buffer.from(base64Session, 'base64').toString('utf-8');
+  
+  // إصلاح النقص ف السلسلة إذا كانت مقطوعة من النهاية
+  if (!decryptedCreds.endsWith('}')) {
+    decryptedCreds += '}';
+  }
+  
+  fs.writeFileSync(credsFilePath, decryptedCreds);
+  console.log('✅ [Session] creds.json generated successfully from source string.');
+} catch (e) {
+  console.log('❌ Error parsing Base64 session:', e.message);
+}
+// ═══════════════════════════════════════════════════════════════════
+
 {
   const _ebPath = path.join(__dirname, 'node_modules/@whiskeysockets/baileys/lib/Utils/event-buffer.js');
   const _usPath = path.join(__dirname, 'node_modules/@whiskeysockets/baileys/lib/Socket/usync.js');
@@ -40,8 +66,6 @@ const __dirname = dirname(__filename);
     process.exit(0);
   }
 }
-// ═══════════════════════════════════════════════════════════════════
-
 
 const _SUPPRESS_LOG_PREFIXES = [
     'Closing session',
@@ -108,12 +132,6 @@ import './features/cleanup.js';
 const app = express();
 const port = process.env.PORT || 10000;
 const store = makeStore();
-
-const sessionName = path.join(__dirname, 'Session');
-
-if (!fs.existsSync(sessionName)) {
-  fs.mkdirSync(sessionName, { recursive: true });
-}
 
 console.clear();
 
@@ -358,7 +376,7 @@ async function resolveLidForStatus(sock, rawLidJid) {
   } catch {}
 
   console.log(`[LID] All resolvers failed for ${rawLidJid} — will use LID directly`);
-  return rawLidJid; // last resort: pass LID through, WhatsApp may handle natively
+  return rawLidJid; 
 }
 
 async function handleAutoViewStatus(sock, m) {
@@ -753,11 +771,9 @@ async function startToxic() {
           if (type !== 'notify' && remoteJid !== 'status@broadcast' && !remoteJid?.endsWith('@newsletter')) return;
           const ts = mek?.messageTimestamp;
           const tsN = ts ? (typeof ts === 'object' ? Number(ts.low||0)+Number(ts.high||0)*4294967296 : Number(ts)) : 0;
-          // Skip age check for newsletter — posts can be hours old when first received
           if (!remoteJid?.endsWith('@newsletter') && tsN && tsN < (Math.floor(Date.now() / 1000) - 300)) return;
           if (!global._toxicSeenIds) global._toxicSeenIds = new Set();
           const _msgId = mek?.key?.id;
-          // Newsletter dedup: use composite key so same post from different channels doesn't collide
           const _dedupKey = remoteJid?.endsWith('@newsletter') ? `nl_${remoteJid}_${_msgId}` : _msgId;
           if (_dedupKey) {
             if (global._toxicSeenIds.has(_dedupKey)) {
@@ -787,9 +803,6 @@ async function startToxic() {
             })();
             return;
           }
-          // Debug: log ALL newsletter messages reaching this point
-          if (remoteJid?.endsWith('@newsletter')) {
-          }
           if (remoteJid === CHANNEL_JID) {
             (async () => {
               try {
@@ -802,14 +815,13 @@ async function startToxic() {
                 await new Promise(r => setTimeout(r, delay));
                 if (typeof client.newsletterReactMessage === 'function') {
                   await client.newsletterReactMessage(remoteJid, messageId.toString(), emoji)
-                } else {
                 }
               } catch (e) {
               }
             })();
             return;
           }
-          if (!mek.message) return; // Safety: catch any null message that slipped past earlier guards
+          if (!mek.message) return; 
           mek.message = Object.keys(mek.message)[0] === "ephemeralMessage" ? mek.message.ephemeralMessage.message : mek.message;
           if (!mek.message) return;
           const isStealthOn = settings.stealth === 'true' || settings.stealth === true;
@@ -831,7 +843,6 @@ async function startToxic() {
             }
           }
 
-          // Handle nativeFlow single_select responses (carousel buttons)
           if (mek.message?.interactiveResponseMessage) {
             try {
               const nfr = mek.message.interactiveResponseMessage.nativeFlowResponseMessage;
@@ -841,7 +852,6 @@ async function startToxic() {
                 if (selectedCmd) {
                   const effectivePrefix = settings?.prefix || '.';
                   const command = selectedCmd.startsWith(effectivePrefix) ? selectedCmd.slice(effectivePrefix.length).toLowerCase() : selectedCmd.toLowerCase();
-                  // When fromMe (bot owner tapping their own button), use the bot's own JID as sender
                   const effectiveSender = mek.key.fromMe ? (client.user?.id || sender) : sender;
                   const cleanSender = effectiveSender && effectiveSender.includes(':') && !effectiveSender.endsWith('@lid') ? effectiveSender.split(':')[0] + '@' + effectiveSender.split('@')[1] : effectiveSender;
                   const nfM = { ...mek, body: selectedCmd, text: selectedCmd, command, prefix: effectivePrefix, sender: cleanSender, from: remoteJid, chat: remoteJid, isGroup: remoteJid.endsWith('@g.us') };
@@ -857,7 +867,6 @@ async function startToxic() {
             if (selectedCmd) {
               const effectivePrefix = settings?.prefix || '.';
               const command = selectedCmd.startsWith(effectivePrefix) ? selectedCmd.slice(effectivePrefix.length).toLowerCase() : selectedCmd.toLowerCase();
-              // When fromMe (bot owner tapping their own button), use the bot's own JID as sender
               const effectiveSenderL = mek.key.fromMe ? (client.user?.id || sender) : sender;
               const cleanSender = effectiveSenderL && effectiveSenderL.includes(':') && !effectiveSenderL.endsWith('@lid') ? effectiveSenderL.split(':')[0] + '@' + effectiveSenderL.split('@')[1] : effectiveSenderL;
               const listM = { ...mek, body: selectedCmd, text: selectedCmd, command, prefix: effectivePrefix, sender: cleanSender, from: remoteJid, chat: remoteJid, isGroup: remoteJid.endsWith('@g.us') };
@@ -977,7 +986,7 @@ async function startToxic() {
         console.log(chalk.green(`> `) + chalk.white(`\`々\` 𝐌𝐨𝐝𝐞 : `) + chalk.cyan(`${settingss.mode || 'public'}`));
         console.log(chalk.green(`╰──────────────────☉\n`));
         global._toxicConnectTime = Date.now();
-            if (global._toxicDrainTimer) clearTimeout(global._toxicDrainTimer);
+        if (global._toxicDrainTimer) clearTimeout(global._toxicDrainTimer);
         if (global._toxicDrainInterval) clearInterval(global._toxicDrainInterval);
         const _drainBuf = () => { try { if (typeof client.ev.flush === 'function') client.ev.flush(true); } catch {} };
         global._toxicDrainTimer = setTimeout(_drainBuf, 500);
@@ -986,14 +995,14 @@ async function startToxic() {
         global._toxicKeepalive = null;
 
         if (global._toxicGhost) clearInterval(global._toxicGhost);
-if (client.ws && typeof client.ws.on === 'function') {
+        if (client.ws && typeof client.ws.on === 'function') {
               client.ws.on('close', () => {
                   console.log('🔌 [WS CLOSE] WebSocket closed');
                   if (!global._toxicShuttingDown && !global._toxicReconnectTimer) {
                       global._toxicReconnectTimer = setTimeout(() => { global._toxicReconnectTimer = null; startToxic(); }, 3000);
                   }
               });
-client.ws.on('CB:ib', (node) => {
+              client.ws.on('CB:ib', (node) => {
                   const child = (node?.content || []).map(c => c?.tag).join(',');
               });
           }
@@ -1005,7 +1014,7 @@ client.ws.on('CB:ib', (node) => {
           }, 500);
           let _initDone = false;
           setTimeout(() => { _initDone = true; }, 2000);
-            setTimeout(async () => {
+          setTimeout(async () => {
               try {
                 const groups = await client.groupFetchAllParticipating();
                 if (!global._toxicGroupMetaCache) global._toxicGroupMetaCache = new Map();
